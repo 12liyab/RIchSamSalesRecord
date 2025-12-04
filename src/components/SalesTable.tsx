@@ -1,12 +1,13 @@
-import { Trash2 } from 'lucide-react';
+import { Trash2, Edit } from 'lucide-react';
 import { SalesEntry } from '../types/sales';
 
 interface SalesTableProps {
   sales: SalesEntry[];
   onDelete: (id: string) => void;
+  onEdit: (sale: SalesEntry) => void;
 }
 
-export default function SalesTable({ sales, onDelete }: SalesTableProps) {
+export default function SalesTable({ sales, onDelete, onEdit }: SalesTableProps) {
   const formatCurrency = (amount: number) => {
     return `GH₵ ${amount.toLocaleString('en-GH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
   };
@@ -83,13 +84,22 @@ export default function SalesTable({ sales, onDelete }: SalesTableProps) {
                   {formatCurrency(sale.balance)}
                 </td>
                 <td className="px-4 py-3 text-center">
-                  <button
-                    onClick={() => onDelete(sale.id)}
-                    className="text-red-600 hover:text-red-800 transition p-1 hover:bg-red-50 rounded"
-                    title="Delete entry"
-                  >
-                    <Trash2 className="w-5 h-5" />
-                  </button>
+                  <div className="flex gap-2 justify-center">
+                    <button
+                      onClick={() => onEdit(sale)}
+                      className="text-blue-600 hover:text-blue-800 transition p-1 hover:bg-blue-50 rounded"
+                      title="Edit entry"
+                    >
+                      <Edit className="w-5 h-5" />
+                    </button>
+                    <button
+                      onClick={() => onDelete(sale.id)}
+                      className="text-red-600 hover:text-red-800 transition p-1 hover:bg-red-50 rounded"
+                      title="Delete entry"
+                    >
+                      <Trash2 className="w-5 h-5" />
+                    </button>
+                  </div>
                 </td>
               </tr>
             ))}

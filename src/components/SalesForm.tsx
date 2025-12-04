@@ -1,14 +1,16 @@
-import { useState } from 'react';
-import { PlusCircle } from 'lucide-react';
-import { ref, push } from 'firebase/database';
+import { useState, useEffect } from 'react';
+import { PlusCircle, X } from 'lucide-react';
+import { ref, push, update } from 'firebase/database';
 import { database } from '../firebase/config';
 import { SalesEntry } from '../types/sales';
 
 interface SalesFormProps {
   onSuccess: () => void;
+  editingSale?: SalesEntry | null;
+  onCancelEdit?: () => void;
 }
 
-export default function SalesForm({ onSuccess }: SalesFormProps) {
+export default function SalesForm({ onSuccess, editingSale, onCancelEdit }: SalesFormProps) {
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     date: new Date().toISOString().split('T')[0],
@@ -22,6 +24,23 @@ export default function SalesForm({ onSuccess }: SalesFormProps) {
     installation: '',
     accessories: ''
   });
+
+  useEffect(() => {
+    if (editingSale) {
+      setFormData({
+        date: editingSale.date,
+        clientName: editingSale.clientName,
+        location: editingSale.location,
+        amountOnInvoice: editingSale.amountOnInvoice.toString(),
+        amountPaid: editingSale.amountPaid.toString(),
+        carpentersDiscount: editingSale.carpentersDiscount.toString(),
+        marketersDiscount: editingSale.marketersDiscount.toString(),
+        transport: editingSale.transport.toString(),
+        installation: editingSale.installation.toString(),
+        accessories: editingSale.accessories.toString()
+      });
+    }
+  }, [editingSale]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
@@ -56,7 +75,11 @@ export default function SalesForm({ onSuccess }: SalesFormProps) {
         createdAt: Date.now()
       };
 
-      await push(ref(database, 'sales'), entry);
+      if (editingSale) {
+        await update(ref(database, `sales/${editingSale.id}`), entry);
+      } else {
+        await push(ref(database, 'sales'), entry);
+      }
 
       setFormData({
         date: new Date().toISOString().split('T')[0],
@@ -73,18 +96,48 @@ export default function SalesForm({ onSuccess }: SalesFormProps) {
 
       onSuccess();
     } catch (error) {
-      console.error('Error adding sale:', error);
-      alert('Failed to add sale. Please try again.');
+      console.error('Error saving sale:', error);
+      alert('Failed to save sale. Please try again.');
     } finally {
       setLoading(false);
     }
   };
 
+  const handleCancel = () => {
+    setFormData({
+      date: new Date().toISOString().split('T')[0],
+      clientName: '',
+      location: '',
+      amountOnInvoice: '',
+      amountPaid: '',
+      carpentersDiscount: '',
+      marketersDiscount: '',
+      transport: '',
+      installation: '',
+      accessories: ''
+    });
+    onCancelEdit?.();
+  };
+
   return (
-    <form onSubmit={handleSubmit} className="bg-white rounded-xl shadow-lg p-6 mb-6">
-      <div className="flex items-center gap-3 mb-6">
-        <PlusCircle className="w-6 h-6 text-emerald-600" />
-        <h2 className="text-2xl font-bold text-gray-800">Add New Sale</h2>
+    <form onSubmit={handleSubmit} className={`rounded-xl shadow-lg p-6 mb-6 ${editingSale ? 'bg-blue-50 border-2 border-blue-200' : 'bg-white'}`}>
+      <div className="flex items-center justify-between gap-3 mb-6">
+        <div className="flex items-center gap-3">
+          <PlusCircle className="w-6 h-6 text-emerald-600" />
+          <h2 className="text-2xl font-bold text-gray-800">
+            {editingSale ? 'Edit Sale' : 'Add New Sale'}
+          </h2>
+        </div>
+        {editingSale && (
+          <button
+            type="button"
+            onClick={handleCancel}
+            className="text-gray-600 hover:text-gray-800 p-1"
+            title="Cancel editing"
+          >
+            <X className="w-6 h-6" />
+          </button>
+        )}
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -231,13 +284,24 @@ export default function SalesForm({ onSuccess }: SalesFormProps) {
         </div>
       </div>
 
-      <button
-        type="submit"
-        disabled={loading}
-        className="mt-6 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-6 py-3 rounded-lg transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-      >
-        {loading ? 'Adding Sale...' : 'Add Sale'}
-      </button>
+      <div className="flex gap-3 mt-6">
+        <button
+          type="submit"
+          disabled={loading}
+          className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-6 py-3 rounded-lg transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {loading ? (editingSale ? 'Updating Sale...' : 'Adding Sale...') : (editingSale ? 'Update Sale' : 'Add Sale')}
+        </button>
+        {editingSale && (
+          <button
+            type="button"
+            onClick={handleCancel}
+            className="bg-gray-400 hover:bg-gray-500 text-white font-semibold px-6 py-3 rounded-lg transition duration-200"
+          >
+            Cancel
+          </button>
+        )}
+      </div>
     </form>
   );
 }

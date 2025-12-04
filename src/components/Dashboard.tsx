@@ -19,7 +19,8 @@ export default function Dashboard() {
     totalBalance: 0,
     entriesCount: 0
   });
-  const { signOut } = useAuth();
+  const [editingSale, setEditingSale] = useState<SalesEntry | null>(null);
+  const { signOut} = useAuth();
 
   useEffect(() => {
     const salesRef = ref(database, 'sales');
@@ -171,8 +172,16 @@ export default function Dashboard() {
         </div>
 
         <SummaryCards summary={summary} />
-        <SalesForm onSuccess={() => {}} />
-        <SalesTable sales={filteredSales} onDelete={handleDelete} />
+        <SalesForm
+          onSuccess={() => setEditingSale(null)}
+          editingSale={editingSale}
+          onCancelEdit={() => setEditingSale(null)}
+        />
+        <SalesTable
+          sales={filteredSales}
+          onDelete={handleDelete}
+          onEdit={setEditingSale}
+        />
       </main>
     </div>
   );
