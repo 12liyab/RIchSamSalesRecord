@@ -43,25 +43,10 @@ export default function SalesForm({ onSuccess, editingSale, onCancelEdit }: Sale
   }, [editingSale]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const updatedFormData = {
+    setFormData({
       ...formData,
       [e.target.name]: e.target.value
-    };
-
-    const deductionFields = ['carpentersDiscount', 'marketersDiscount', 'transport', 'installation', 'accessories'];
-    if (deductionFields.includes(e.target.name) || e.target.name === 'amountOnInvoice') {
-      const amountOnInvoice = parseFloat(updatedFormData.amountOnInvoice) || 0;
-      const totalDeductions =
-        (parseFloat(updatedFormData.carpentersDiscount) || 0) +
-        (parseFloat(updatedFormData.marketersDiscount) || 0) +
-        (parseFloat(updatedFormData.transport) || 0) +
-        (parseFloat(updatedFormData.installation) || 0) +
-        (parseFloat(updatedFormData.accessories) || 0);
-
-      updatedFormData.amountPaid = (amountOnInvoice - totalDeductions).toString();
-    }
-
-    setFormData(updatedFormData);
+    });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -71,7 +56,13 @@ export default function SalesForm({ onSuccess, editingSale, onCancelEdit }: Sale
     try {
       const amountOnInvoice = parseFloat(formData.amountOnInvoice) || 0;
       const amountPaid = parseFloat(formData.amountPaid) || 0;
-      const balance = amountOnInvoice - amountPaid;
+      const totalDeductions =
+        (parseFloat(formData.carpentersDiscount) || 0) +
+        (parseFloat(formData.marketersDiscount) || 0) +
+        (parseFloat(formData.transport) || 0) +
+        (parseFloat(formData.installation) || 0) +
+        (parseFloat(formData.accessories) || 0);
+      const balance = amountPaid - totalDeductions;
       const year = new Date(formData.date).getFullYear();
 
       const entry: Omit<SalesEntry, 'id'> = {
@@ -222,8 +213,9 @@ export default function SalesForm({ onSuccess, editingSale, onCancelEdit }: Sale
             step="0.01"
             name="amountPaid"
             value={formData.amountPaid}
-            readOnly
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-100 text-gray-700 cursor-not-allowed"
+            onChange={handleChange}
+            required
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
           />
         </div>
 
