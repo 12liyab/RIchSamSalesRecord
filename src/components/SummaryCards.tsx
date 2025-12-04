@@ -28,7 +28,7 @@ export default function SummaryCards({ summary }: SummaryCardsProps) {
       bgLight: 'bg-emerald-50'
     },
     {
-      title: 'Balance',
+      title: 'Outstanding Balance',
       value: formatCurrency(summary.totalBalance),
       icon: AlertCircle,
       bgColor: 'bg-red-500',
