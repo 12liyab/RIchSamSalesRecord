@@ -43,10 +43,25 @@ export default function SalesForm({ onSuccess, editingSale, onCancelEdit }: Sale
   }, [editingSale]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({
+    const updatedFormData = {
       ...formData,
       [e.target.name]: e.target.value
-    });
+    };
+
+    const deductionFields = ['carpentersDiscount', 'marketersDiscount', 'transport', 'installation', 'accessories'];
+    if (deductionFields.includes(e.target.name) || e.target.name === 'amountOnInvoice') {
+      const amountOnInvoice = parseFloat(updatedFormData.amountOnInvoice) || 0;
+      const totalDeductions =
+        (parseFloat(updatedFormData.carpentersDiscount) || 0) +
+        (parseFloat(updatedFormData.marketersDiscount) || 0) +
+        (parseFloat(updatedFormData.transport) || 0) +
+        (parseFloat(updatedFormData.installation) || 0) +
+        (parseFloat(updatedFormData.accessories) || 0);
+
+      updatedFormData.amountPaid = (amountOnInvoice - totalDeductions).toString();
+    }
+
+    setFormData(updatedFormData);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -207,9 +222,8 @@ export default function SalesForm({ onSuccess, editingSale, onCancelEdit }: Sale
             step="0.01"
             name="amountPaid"
             value={formData.amountPaid}
-            onChange={handleChange}
-            required
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+            readOnly
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-100 text-gray-700 cursor-not-allowed"
           />
         </div>
 
