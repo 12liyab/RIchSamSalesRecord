@@ -21,3 +21,8 @@ npm install
 ```bash
 npm start
 ```
+## Tech Stack
+- Frontend: React
+- Backend: Node.js/Express
+- Database: MongoDB
+- Styling: CSS/Tailwind
