@@ -15,3 +15,9 @@ A comprehensive sales tracking application designed to help businesses monitor, 
 git clone https://github.com/yourusername/RichSamSalesTracker.git
 cd RichSamSalesTracker
 npm install
+
+
+## Usage
+```bash
+npm start
+```
