@@ -24,5 +24,5 @@ npm start
 ## Tech Stack
 - Frontend: React
 - Backend: Node.js/Express
-- Database: MongoDB
+- Database: Firebase
 - Styling: CSS/Tailwind
