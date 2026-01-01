@@ -4,3 +4,8 @@ A comprehensive sales tracking application designed to help businesses monitor, 
 
 ## Features
 **Sales Dashboard**: Real-time visualization of sales metrics and KPIs
+- **Pipeline Management**: Track deals through different stages
+- **Reporting**: Generate detailed sales reports and forecasts
+- **Team Analytics**: Monitor individual and team performance
+- **Customer Database**: Centralized customer information management
+- **Automated Notifications**: Alerts for important milestones
