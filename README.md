@@ -9,3 +9,9 @@ A comprehensive sales tracking application designed to help businesses monitor, 
 - **Team Analytics**: Monitor individual and team performance
 - **Customer Database**: Centralized customer information management
 - **Automated Notifications**: Alerts for important milestones
+
+## Installation
+```bash
+git clone https://github.com/yourusername/RichSamSalesTracker.git
+cd RichSamSalesTracker
+npm install
